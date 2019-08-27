@@ -8,10 +8,10 @@ namespace GeoTetra.GTTween
     public static class RectTransformTweens
     {
         public static IEnumerator ToLocalPosition(
-            RectTransform rectTransform, 
-            Vector2 targetPosition, 
+            RectTransform rectTransform,
+            Vector2 targetPosition,
             float multiplier,
-            AnimationCurve easeCurve, 
+            AnimationCurve easeCurve,
             Action onFinish)
         {
             float time = 0;
@@ -28,10 +28,31 @@ namespace GeoTetra.GTTween
 
             rectTransform.localPosition = targetPosition;
 
-            if (onFinish != null)
+            onFinish?.Invoke();
+        }
+
+        public static IEnumerator ToAnchoredPosition(
+            RectTransform rectTransform,
+            Vector2 targetPosition,
+            float multiplier,
+            AnimationCurve easeCurve,
+            Action onFinish)
+        {
+            float time = 0;
+            float easeTime = 0;
+            Vector2 startPosition = rectTransform.anchoredPosition;
+
+            while (time < 1)
             {
-                onFinish();
+                time += Time.deltaTime * multiplier;
+                easeTime = easeCurve.Evaluate(time);
+                rectTransform.anchoredPosition = Vector2.Lerp(startPosition, targetPosition, easeTime);
+                yield return null;
             }
+
+            rectTransform.anchoredPosition = targetPosition;
+
+            onFinish?.Invoke();
         }
     }
 }
